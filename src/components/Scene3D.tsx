@@ -1,8 +1,8 @@
 "use client";
 
-import { useRef } from "react";
+import { Suspense, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Environment } from "@react-three/drei";
+import { Environment, Preload } from "@react-three/drei";
 import * as THREE from "three";
 
 function Polyhedron({ scrollProgress, mousePos }: { scrollProgress: number; mousePos: { x: number; y: number } }) {
@@ -27,9 +27,9 @@ function Polyhedron({ scrollProgress, mousePos }: { scrollProgress: number; mous
     groupRef.current.position.y += (yTarget - groupRef.current.position.y) * 0.03;
 
     // Scale: stays visible throughout, only fades at very end
-    let targetScale = 1.0 + scrollProgress * 0.3; // grows slightly
+    let targetScale = 1.0 + scrollProgress * 0.3;
     if (scrollProgress > 0.9) {
-      targetScale *= 1.0 - (scrollProgress - 0.9) / 0.1; // fade out last 10%
+      targetScale *= 1.0 - (scrollProgress - 0.9) / 0.1;
     }
     targetScale = Math.max(targetScale, 0.01);
     const s = groupRef.current.scale.x;
@@ -50,7 +50,6 @@ function Polyhedron({ scrollProgress, mousePos }: { scrollProgress: number; mous
 
   return (
     <group ref={groupRef} position={[2.5, 0, 0]}>
-      {/* Main solid mesh */}
       <mesh ref={meshRef}>
         <icosahedronGeometry args={[2, 1]} />
         <meshStandardMaterial
@@ -62,7 +61,6 @@ function Polyhedron({ scrollProgress, mousePos }: { scrollProgress: number; mous
           opacity={1}
         />
       </mesh>
-      {/* Wireframe overlay */}
       <mesh ref={wireRef}>
         <icosahedronGeometry args={[2.03, 1]} />
         <meshBasicMaterial
@@ -73,6 +71,20 @@ function Polyhedron({ scrollProgress, mousePos }: { scrollProgress: number; mous
         />
       </mesh>
     </group>
+  );
+}
+
+function SceneInner({ scrollProgress, mousePos }: { scrollProgress: number; mousePos: { x: number; y: number } }) {
+  return (
+    <>
+      <ambientLight intensity={0.3} />
+      <directionalLight position={[5, 5, 5]} intensity={1.0} />
+      <directionalLight position={[-3, -2, -5]} intensity={0.3} color="#6366f1" />
+      <pointLight position={[0, 2, 5]} intensity={0.5} color="#a5b4fc" />
+      <Polyhedron scrollProgress={scrollProgress} mousePos={mousePos} />
+      <Environment preset="city" />
+      <Preload all />
+    </>
   );
 }
 
@@ -92,12 +104,9 @@ export default function Scene3D({ scrollProgress, mousePos }: { scrollProgress: 
         gl={{ antialias: true, alpha: true }}
         style={{ background: "transparent" }}
       >
-        <ambientLight intensity={0.3} />
-        <directionalLight position={[5, 5, 5]} intensity={1.0} />
-        <directionalLight position={[-3, -2, -5]} intensity={0.3} color="#6366f1" />
-        <pointLight position={[0, 2, 5]} intensity={0.5} color="#a5b4fc" />
-        <Polyhedron scrollProgress={scrollProgress} mousePos={mousePos} />
-        <Environment preset="city" />
+        <Suspense fallback={null}>
+          <SceneInner scrollProgress={scrollProgress} mousePos={mousePos} />
+        </Suspense>
       </Canvas>
     </div>
   );
