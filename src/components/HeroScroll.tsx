@@ -7,38 +7,40 @@ const sections = [
     num: "01",
     label: "ORIGIN",
     tag: "WELCOME",
-    title: "BUILDING THE\nFUTURE",
+    title: ["BUILDING THE", "FUTURE"],
     subtitle: "Physics & AI at Carnegie Mellon University",
     cta: "EXPLORE",
+    ctaHref: "#projects",
   },
   {
     num: "02",
     label: "VENTURES",
     tag: "STARTUPS",
-    title: "FROM IDEA\nTO IMPACT",
+    title: ["FROM IDEA", "TO IMPACT"],
     subtitle: "Founded 3 startups. Shipped products. Got users.",
   },
   {
     num: "03",
     label: "ENGINEERING",
     tag: "ROBOTICS & ROCKETS",
-    title: "PRECISION\nENGINEERED",
+    title: ["PRECISION", "ENGINEERED"],
     subtitle: "5-DOF robot arms. Sounding rockets. FRC lead programmer.",
   },
   {
     num: "04",
     label: "CRAFT",
     tag: "HANDS ON",
-    title: "BUILT BY\nHAND",
+    title: ["BUILT BY", "HAND"],
     subtitle: "Modding an Audi S5. Flipping cars. Getting dirty.",
   },
   {
     num: "05",
     label: "CONNECT",
     tag: "WHAT'S NEXT",
-    title: "LET'S BUILD\nSOMETHING",
+    title: ["LET'S BUILD", "SOMETHING"],
     subtitle: "",
     cta: "GET IN TOUCH",
+    ctaHref: "#contact",
   },
 ];
 
@@ -50,8 +52,8 @@ interface HeroScrollProps {
 export default function HeroScroll({ onProgress, onTheme }: HeroScrollProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [sectionProgress, setSectionProgress] = useState(0);
-  const [isVisible, setIsVisible] = useState(true);
+  const [sidebarOpacity, setSidebarOpacity] = useState(1);
+  const [contentOpacity, setContentOpacity] = useState(1);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -60,105 +62,191 @@ export default function HeroScroll({ onProgress, onTheme }: HeroScrollProps) {
       const scrollHeight = containerRef.current.scrollHeight - window.innerHeight;
       const scrolled = -rect.top;
       const progress = Math.max(0, Math.min(1, scrolled / scrollHeight));
-      
-      onProgress(progress);
-      
-      const sectionIndex = Math.min(Math.floor(progress * sections.length), sections.length - 1);
-      const sectionProg = (progress * sections.length) % 1;
-      setActiveIndex(sectionIndex);
-      setSectionProgress(sectionProg);
-      setIsVisible(progress < 0.98);
 
-      // Theme: sections 0,1 = dark, 2 = light, 3,4 = dark
+      onProgress(progress);
+
+      const idx = Math.min(Math.floor(progress * sections.length), sections.length - 1);
+      setActiveIndex(idx);
+
+      // Fade sidebar near end
+      setSidebarOpacity(progress < 0.85 ? 1 : Math.max(0, (1 - progress) / 0.15));
+
+      // Fade content between sections
+      const sectionProg = (progress * sections.length) % 1;
+      if (sectionProg < 0.1) setContentOpacity(sectionProg / 0.1);
+      else if (sectionProg > 0.85) setContentOpacity((1 - sectionProg) / 0.15);
+      else setContentOpacity(1);
+
+      // Theme
       if (progress < 0.3) onTheme("dark");
       else if (progress < 0.55) onTheme("light");
       else onTheme("dark");
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, [onProgress, onTheme]);
 
   const active = sections[activeIndex];
+  const isDark = activeIndex === 0 || activeIndex === 1 || activeIndex >= 3;
+  const textColor = isDark ? "#ffffff" : "#09090b";
+  const mutedColor = isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)";
+  const borderColor = isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)";
 
   return (
-    <div ref={containerRef} style={{ height: "500vh" }} className="relative">
-      {/* Sticky viewport */}
-      <div className="sticky top-0 h-screen overflow-hidden">
-        
+    <div ref={containerRef} style={{ height: "500vh", position: "relative" }}>
+      <div style={{
+        position: "sticky",
+        top: 0,
+        height: "100vh",
+        overflow: "hidden",
+        transition: "color 0.6s ease",
+        color: textColor,
+      }}>
+
         {/* Corner crosshairs */}
-        {isVisible && (
-          <>
-            <div className="crosshair absolute top-8 right-8 transition-opacity duration-500" style={{ opacity: isVisible ? 0.3 : 0, transform: `rotate(${sectionProgress * 90}deg)` }} />
-            <div className="crosshair absolute bottom-8 right-8 transition-opacity duration-500" style={{ opacity: isVisible ? 0.3 : 0, transform: `rotate(${-sectionProgress * 90}deg)` }} />
-            <div className="crosshair absolute bottom-8 left-8 transition-opacity duration-500" style={{ opacity: isVisible ? 0.3 : 0, transform: `rotate(${sectionProgress * 45}deg)` }} />
-          </>
-        )}
+        {[
+          { top: 32, right: 32, left: "auto", bottom: "auto" },
+          { bottom: 32, right: 32, top: "auto", left: "auto" },
+          { bottom: 32, left: 32, top: "auto", right: "auto" },
+        ].map((pos, i) => (
+          <div key={i} style={{
+            position: "absolute",
+            ...pos,
+            width: 20,
+            height: 20,
+            opacity: sidebarOpacity * 0.3,
+            transition: "opacity 0.5s",
+            zIndex: 20,
+          }}>
+            <div style={{
+              position: "absolute",
+              width: 1,
+              height: "100%",
+              left: "50%",
+              background: "currentColor",
+            }} />
+            <div style={{
+              position: "absolute",
+              height: 1,
+              width: "100%",
+              top: "50%",
+              background: "currentColor",
+            }} />
+          </div>
+        ))}
 
         {/* Left sidebar */}
-        {isVisible && (
-          <div className="absolute left-8 top-24 bottom-24 flex flex-col z-20 transition-opacity duration-700" style={{ opacity: isVisible ? 1 : 0 }}>
-            <div className="crosshair mb-4" style={{ opacity: 0.4 }} />
-            
-            {sections.map((s, i) => (
-              <div key={i} className="flex items-start gap-3 mb-2">
-                <div className="flex flex-col items-center">
-                  <div
-                    className="w-[1px] transition-all duration-500"
-                    style={{
-                      height: i === activeIndex ? "40px" : "20px",
-                      background: i === activeIndex ? "currentColor" : "rgba(255,255,255,0.15)",
-                    }}
-                  />
-                </div>
-                <div
-                  className="transition-all duration-500"
-                  style={{
-                    opacity: i === activeIndex ? 1 : 0.3,
-                    transform: `translateX(${i === activeIndex ? 0 : -4}px)`,
-                  }}
-                >
-                  <div className="text-[10px] opacity-50 font-mono">{s.num}</div>
-                  <div className="text-[11px] font-semibold tracking-[0.15em] uppercase">{s.label}</div>
-                </div>
-              </div>
-            ))}
-            
-            <div className="flex-1 w-[1px] bg-current opacity-10 ml-0" />
+        <div style={{
+          position: "absolute",
+          left: 32,
+          top: 100,
+          bottom: 100,
+          display: "flex",
+          flexDirection: "column",
+          zIndex: 20,
+          opacity: sidebarOpacity,
+          transition: "opacity 0.7s",
+        }}>
+          {/* Top crosshair */}
+          <div style={{ width: 16, height: 16, marginBottom: 24, position: "relative" }}>
+            <div style={{ position: "absolute", width: 1, height: "100%", left: "50%", background: "currentColor", opacity: 0.4 }} />
+            <div style={{ position: "absolute", height: 1, width: "100%", top: "50%", background: "currentColor", opacity: 0.4 }} />
           </div>
-        )}
+
+          {sections.map((s, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 8 }}>
+              <div style={{
+                width: 1,
+                height: i === activeIndex ? 44 : 22,
+                background: i === activeIndex ? "currentColor" : mutedColor,
+                transition: "all 0.5s",
+                flexShrink: 0,
+              }} />
+              <div style={{
+                opacity: i === activeIndex ? 1 : 0.25,
+                transform: `translateX(${i === activeIndex ? 0 : -4}px)`,
+                transition: "all 0.5s",
+              }}>
+                <div style={{ fontSize: 10, opacity: 0.5, fontFamily: "monospace" }}>{s.num}</div>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.15em", textTransform: "uppercase" as const }}>{s.label}</div>
+              </div>
+            </div>
+          ))}
+
+          <div style={{ flex: 1, width: 1, background: "currentColor", opacity: 0.08 }} />
+        </div>
 
         {/* Main content */}
-        <div className="absolute inset-0 flex items-center justify-center z-10 px-8">
-          <div className="max-w-5xl w-full">
+        <div style={{
+          position: "absolute",
+          inset: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 10,
+          padding: "0 32px",
+          opacity: contentOpacity,
+          transition: "opacity 0.3s ease",
+        }}>
+          <div style={{ maxWidth: 900, width: "100%" }}>
             {/* Tag */}
-            <div className="section-label mb-6 transition-all duration-500" key={`tag-${activeIndex}`}>
+            <div style={{
+              fontSize: 10,
+              letterSpacing: "0.3em",
+              textTransform: "uppercase" as const,
+              opacity: 0.5,
+              marginBottom: 24,
+            }}>
               {active.tag}
             </div>
 
             {/* Title */}
-            <h1 className="hero-title mb-8 transition-all duration-700" key={`title-${activeIndex}`}>
-              {active.title.split("\n").map((line, i) => (
-                <span key={i} className="block" style={{ 
-                  animationDelay: `${i * 0.1}s`,
-                  opacity: 1,
+            <div style={{ marginBottom: 32 }}>
+              {active.title.map((line, i) => (
+                <div key={`${activeIndex}-${i}`} style={{
+                  fontSize: "clamp(3rem, 10vw, 9rem)",
+                  fontWeight: 700,
+                  lineHeight: 0.95,
+                  letterSpacing: "-0.03em",
+                  textTransform: "uppercase" as const,
                 }}>
                   {line}
-                </span>
+                </div>
               ))}
-            </h1>
+            </div>
 
             {/* Subtitle */}
             {active.subtitle && (
-              <p className="hero-subtitle mb-10 transition-all duration-500" key={`sub-${activeIndex}`}>
+              <p style={{
+                fontSize: "clamp(1rem, 2vw, 1.25rem)",
+                fontWeight: 300,
+                opacity: 0.5,
+                maxWidth: 500,
+                lineHeight: 1.6,
+                marginBottom: 40,
+              }}>
                 {active.subtitle}
               </p>
             )}
 
             {/* CTA */}
             {active.cta && (
-              <a href="#projects" className="cta-btn" key={`cta-${activeIndex}`}>
-                <span className="crosshair" style={{ width: 14, height: 14, opacity: 0.5 }} />
+              <a href={active.ctaHref} style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 12,
+                padding: "16px 32px",
+                border: `1px solid ${borderColor}`,
+                fontSize: 12,
+                letterSpacing: "0.2em",
+                textTransform: "uppercase" as const,
+                fontWeight: 500,
+                textDecoration: "none",
+                color: "inherit",
+                transition: "all 0.3s",
+              }}>
                 {active.cta}
               </a>
             )}
@@ -167,9 +255,20 @@ export default function HeroScroll({ onProgress, onTheme }: HeroScrollProps) {
 
         {/* Scroll indicator */}
         {activeIndex === 0 && (
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 opacity-40">
-            <span className="text-[10px] tracking-[0.3em] uppercase">Explore the void</span>
-            <span className="text-lg">↓</span>
+          <div style={{
+            position: "absolute",
+            bottom: 32,
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 20,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 8,
+            opacity: 0.3,
+          }}>
+            <span style={{ fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase" as const }}>Scroll to explore</span>
+            <span style={{ fontSize: 18 }}>↓</span>
           </div>
         )}
       </div>

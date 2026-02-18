@@ -17,10 +17,10 @@ export default function Home() {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    setIsMobile(window.innerWidth < 768);
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
   }, []);
 
   useEffect(() => {
@@ -37,33 +37,28 @@ export default function Home() {
   const handleProgress = useCallback((p: number) => setScrollProgress(p), []);
   const handleTheme = useCallback((t: "dark" | "light") => setTheme(t), []);
 
-  const bgColor = theme === "dark" ? "#000000" : "#f0f0f0";
-  const fgColor = theme === "dark" ? "#ffffff" : "#09090b";
+  const isDark = theme === "dark";
+  const bgColor = isDark ? "#000000" : "#e8e8e8";
+  const fgColor = isDark ? "#ffffff" : "#09090b";
 
   return (
-    <main
-      className="relative min-h-screen theme-wrapper"
-      style={{
-        backgroundColor: bgColor,
-        color: fgColor,
-        ["--bg" as string]: bgColor,
-        ["--fg" as string]: fgColor,
-      }}
-    >
+    <div style={{
+      minHeight: "100vh",
+      background: bgColor,
+      color: fgColor,
+      transition: "background-color 0.8s ease, color 0.8s ease",
+    }}>
       <Navbar theme={theme} />
 
-      {/* 3D Scene */}
       {!isMobile && <Scene3D scrollProgress={scrollProgress} mousePos={mousePos} />}
 
-      {/* Hero scroll section */}
       <HeroScroll onProgress={handleProgress} onTheme={handleTheme} />
 
-      {/* Normal content after hero */}
-      <div style={{ background: "#000", color: "#fff" }}>
+      <div style={{ background: "#000", color: "#fff", position: "relative", zIndex: 10 }}>
         <Projects />
         <Experience />
         <Contact />
       </div>
-    </main>
+    </div>
   );
 }

@@ -5,21 +5,50 @@ interface NavbarProps {
 }
 
 export default function Navbar({ theme }: NavbarProps) {
-  const textColor = theme === "dark" ? "text-white" : "text-zinc-950";
-  const borderColor = theme === "dark" ? "border-white/10" : "border-zinc-200";
-  
+  const isDark = theme === "dark";
+
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-6 transition-colors duration-600 ${textColor}`}>
-      <a href="#" className="text-sm font-semibold tracking-[0.15em] uppercase">
+    <nav style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      zIndex: 50,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      padding: "24px 32px",
+      transition: "color 0.6s ease",
+      color: isDark ? "#fff" : "#09090b",
+      mixBlendMode: "difference",
+    }}>
+      <a href="#" style={{
+        fontSize: 13,
+        fontWeight: 600,
+        letterSpacing: "0.15em",
+        textTransform: "uppercase" as const,
+        textDecoration: "none",
+        color: "inherit",
+      }}>
         Victor Zhang
       </a>
-      
-      <div className="hidden md:flex items-center gap-10">
+
+      <div style={{ display: "flex", alignItems: "center", gap: 40 }}>
         {["Projects", "Experience", "Contact"].map((item) => (
           <a
             key={item}
             href={`#${item.toLowerCase()}`}
-            className="text-[11px] tracking-[0.2em] uppercase opacity-60 hover:opacity-100 transition-opacity duration-300"
+            style={{
+              fontSize: 11,
+              letterSpacing: "0.2em",
+              textTransform: "uppercase" as const,
+              opacity: 0.6,
+              textDecoration: "none",
+              color: "inherit",
+              transition: "opacity 0.3s",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+            onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.6")}
           >
             {item}
           </a>

@@ -44,44 +44,60 @@ const education = [
 
 export default function Experience() {
   return (
-    <section id="experience" className="relative z-10 py-32 px-8 max-w-5xl mx-auto">
+    <section id="experience" style={{ position: "relative", zIndex: 10, padding: "128px 32px", maxWidth: 900, margin: "0 auto" }}>
       {/* Experience */}
-      <div className="mb-24">
-        <div className="section-label mb-4 text-zinc-500">Experience</div>
-        <h2 className="text-5xl md:text-6xl font-bold tracking-tight mb-16">
-          Where I&apos;ve <span className="opacity-30">_</span> Worked
+      <div style={{ marginBottom: 96 }}>
+        <div style={{ fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", color: "#71717a", marginBottom: 16 }}>Experience</div>
+        <h2 style={{ fontSize: "clamp(2.5rem, 5vw, 3.5rem)", fontWeight: 700, letterSpacing: "-0.02em", marginBottom: 64 }}>
+          Where I&apos;ve <span style={{ opacity: 0.2 }}>_</span> Worked
         </h2>
 
-        <div className="space-y-0">
+        <div>
           {experience.map((e, i) => (
-            <div key={i} className="timeline-item pb-12">
-              <div className="timeline-dot" />
-              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-1 mb-2">
+            <div key={i} style={{
+              position: "relative",
+              paddingLeft: 32,
+              paddingBottom: 48,
+              borderLeft: "1px solid rgba(255,255,255,0.1)",
+            }}>
+              {/* Dot */}
+              <div style={{
+                position: "absolute",
+                left: -5,
+                top: 8,
+                width: 9,
+                height: 9,
+                borderRadius: "50%",
+                background: "#fff",
+                border: "2px solid #000",
+              }} />
+
+              <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", gap: 4, marginBottom: 8 }}>
                 <div>
-                  <h3 className="text-lg font-semibold">{e.role}</h3>
-                  <p className="text-zinc-400 text-sm">{e.company}{e.location && ` · ${e.location}`}</p>
+                  <h3 style={{ fontSize: 18, fontWeight: 600 }}>{e.role}</h3>
+                  <p style={{ color: "#a1a1aa", fontSize: 14 }}>{e.company}{e.location && ` · ${e.location}`}</p>
                 </div>
-                <span className="text-zinc-600 text-xs font-mono shrink-0">{e.date}</span>
+                <span style={{ color: "#52525b", fontSize: 12, fontFamily: "monospace", flexShrink: 0 }}>{e.date}</span>
               </div>
-              <p className="text-zinc-500 text-sm leading-relaxed font-light">{e.desc}</p>
+              <p style={{ color: "#71717a", fontSize: 14, lineHeight: 1.6, fontWeight: 300 }}>{e.desc}</p>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Awards & Education side by side */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+      {/* Awards & Education */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64 }}>
         {/* Awards */}
         <div>
-          <div className="section-label mb-4 text-zinc-500">Awards</div>
-          <div className="space-y-6">
+          <div style={{ fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", color: "#71717a", marginBottom: 16 }}>Awards</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
             {awards.map((a, i) => (
-              <div key={i} className="flex items-start gap-4">
-                <span className="text-yellow-500/70 text-lg mt-0.5">🏆</span>
+              <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 16 }}>
+                <span style={{ fontSize: 18, marginTop: 2 }}>🏆</span>
                 <div>
-                  <h4 className="text-sm font-semibold">{a.title}</h4>
-                  {a.org && <p className="text-zinc-500 text-xs">{a.org}</p>}
-                  <p className="text-zinc-600 text-xs font-mono">{a.date}</p>
+                  <h4 style={{ fontSize: 14, fontWeight: 600 }}>{a.title}</h4>
+                  {a.org && <p style={{ color: "#71717a", fontSize: 12 }}>{a.org}</p>}
+                  <p style={{ color: "#52525b", fontSize: 12, fontFamily: "monospace" }}>{a.date}</p>
                 </div>
               </div>
             ))}
@@ -90,13 +106,13 @@ export default function Experience() {
 
         {/* Education */}
         <div>
-          <div className="section-label mb-4 text-zinc-500">Education</div>
-          <div className="space-y-6">
+          <div style={{ fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", color: "#71717a", marginBottom: 16 }}>Education</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
             {education.map((e, i) => (
               <div key={i}>
-                <h4 className="text-sm font-semibold">{e.school}</h4>
-                <p className="text-zinc-400 text-xs">{e.degree}</p>
-                <p className="text-zinc-600 text-xs font-mono">{e.date}</p>
+                <h4 style={{ fontSize: 14, fontWeight: 600 }}>{e.school}</h4>
+                <p style={{ color: "#a1a1aa", fontSize: 12 }}>{e.degree}</p>
+                <p style={{ color: "#52525b", fontSize: 12, fontFamily: "monospace" }}>{e.date}</p>
               </div>
             ))}
           </div>

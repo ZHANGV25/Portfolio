@@ -46,38 +46,86 @@ const projects = [
   },
 ];
 
+const cardStyle: React.CSSProperties = {
+  padding: 32,
+  borderRadius: 24,
+  border: "1px solid rgba(255,255,255,0.06)",
+  background: "rgba(255,255,255,0.02)",
+  transition: "all 0.3s ease",
+  cursor: "default",
+};
+
+const tagStyle: React.CSSProperties = {
+  display: "inline-block",
+  padding: "4px 12px",
+  borderRadius: 8,
+  background: "rgba(255,255,255,0.05)",
+  border: "1px solid rgba(255,255,255,0.06)",
+  fontSize: 10,
+  letterSpacing: "0.1em",
+  textTransform: "uppercase",
+  color: "#a1a1aa",
+};
+
 export default function Projects() {
   return (
-    <section id="projects" className="relative z-10 py-32 px-8 max-w-7xl mx-auto">
-      <div className="mb-20">
-        <div className="section-label mb-4 text-zinc-500">Projects</div>
-        <h2 className="text-5xl md:text-6xl font-bold tracking-tight">
-          What I&apos;ve <span className="opacity-30">_</span> Built
+    <section id="projects" style={{ position: "relative", zIndex: 10, padding: "128px 32px", maxWidth: 1200, margin: "0 auto" }}>
+      <div style={{ marginBottom: 80 }}>
+        <div style={{ fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", color: "#71717a", marginBottom: 16 }}>Projects</div>
+        <h2 style={{ fontSize: "clamp(2.5rem, 5vw, 3.5rem)", fontWeight: 700, letterSpacing: "-0.02em" }}>
+          What I&apos;ve <span style={{ opacity: 0.2 }}>_</span> Built
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))",
+        gap: 24,
+      }}>
         {projects.map((p) => (
-          <div key={p.title} className="project-card group">
+          <div
+            key={p.title}
+            style={cardStyle}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)";
+              e.currentTarget.style.background = "rgba(255,255,255,0.04)";
+              e.currentTarget.style.transform = "translateY(-2px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)";
+              e.currentTarget.style.background = "rgba(255,255,255,0.02)";
+              e.currentTarget.style.transform = "translateY(0)";
+            }}
+          >
             {/* Image placeholder */}
-            <div className="w-full h-44 rounded-xl bg-white/[0.03] border border-white/5 mb-6 flex items-center justify-center">
-              <span className="text-zinc-700 text-xs tracking-widest uppercase">Screenshot</span>
+            <div style={{
+              width: "100%",
+              height: 176,
+              borderRadius: 16,
+              background: "rgba(255,255,255,0.03)",
+              border: "1px solid rgba(255,255,255,0.05)",
+              marginBottom: 24,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}>
+              <span style={{ color: "#3f3f46", fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase" }}>Screenshot</span>
             </div>
 
-            <div className="flex items-start justify-between mb-3">
-              <h3 className="text-xl font-semibold tracking-tight">{p.title}</h3>
-              <span className="text-zinc-600 text-xs font-mono mt-1">{p.date}</span>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
+              <h3 style={{ fontSize: 20, fontWeight: 600, letterSpacing: "-0.01em" }}>{p.title}</h3>
+              <span style={{ color: "#52525b", fontSize: 12, fontFamily: "monospace", flexShrink: 0, marginLeft: 12 }}>{p.date}</span>
             </div>
 
-            <p className="text-zinc-400 text-sm leading-relaxed mb-4 font-light">{p.desc}</p>
+            <p style={{ color: "#a1a1aa", fontSize: 14, lineHeight: 1.6, fontWeight: 300, marginBottom: 16 }}>{p.desc}</p>
 
             {p.award && (
-              <div className="text-xs text-yellow-500/80 mb-4 font-medium">{p.award}</div>
+              <div style={{ fontSize: 12, color: "rgba(234,179,8,0.7)", fontWeight: 500, marginBottom: 16 }}>{p.award}</div>
             )}
 
-            <div className="flex flex-wrap gap-2 mb-4">
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
               {p.tags.map((tag) => (
-                <span key={tag} className="tag">{tag}</span>
+                <span key={tag} style={tagStyle}>{tag}</span>
               ))}
             </div>
 
@@ -86,7 +134,15 @@ export default function Projects() {
                 href={p.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-zinc-400 hover:text-white transition-colors underline underline-offset-4 decoration-zinc-700"
+                style={{
+                  fontSize: 12,
+                  color: "#a1a1aa",
+                  textDecoration: "underline",
+                  textUnderlineOffset: 4,
+                  transition: "color 0.3s",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}
               >
                 {p.linkLabel} →
               </a>
