@@ -89,7 +89,8 @@ export default function HeroScroll({ onProgress, onTheme }: HeroScrollProps) {
   }, [onProgress, onTheme]);
 
   const active = sections[activeIndex];
-  const isDark = activeIndex === 0 || activeIndex === 1 || activeIndex >= 3;
+  // Theme based on scroll progress matching the onTheme calls
+  const isDark = activeIndex <= 1 || activeIndex >= 3;
   const textColor = isDark ? "#ffffff" : "#09090b";
   const mutedColor = isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)";
   const borderColor = isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)";

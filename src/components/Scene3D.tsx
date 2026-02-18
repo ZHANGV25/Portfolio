@@ -14,61 +14,63 @@ function Polyhedron({ scrollProgress, mousePos }: { scrollProgress: number; mous
     if (!groupRef.current || !meshRef.current || !wireRef.current) return;
     const t = state.clock.elapsedTime;
 
-    // Mouse tilt
-    groupRef.current.rotation.x += (mousePos.y * 0.2 - groupRef.current.rotation.x) * 0.03;
-    groupRef.current.rotation.y += (mousePos.x * 0.2 + t * 0.12 - groupRef.current.rotation.y) * 0.03;
+    // Constant slow rotation + mouse tilt
+    groupRef.current.rotation.x += (mousePos.y * 0.15 + Math.sin(t * 0.2) * 0.1 - groupRef.current.rotation.x) * 0.02;
+    groupRef.current.rotation.y += (mousePos.x * 0.15 + t * 0.1 - groupRef.current.rotation.y) * 0.02;
 
-    // Scroll-driven horizontal position
-    const xTarget = THREE.MathUtils.lerp(2, -2, Math.min(scrollProgress * 2.5, 1));
-    groupRef.current.position.x += (xTarget - groupRef.current.position.x) * 0.04;
+    // Scroll-driven horizontal position: starts right, moves left
+    const xTarget = 2.5 - scrollProgress * 5;
+    groupRef.current.position.x += (xTarget - groupRef.current.position.x) * 0.03;
 
-    // Scroll-driven vertical bob
-    const yTarget = Math.sin(scrollProgress * Math.PI * 2) * 0.5;
-    groupRef.current.position.y += (yTarget - groupRef.current.position.y) * 0.04;
+    // Gentle vertical float
+    const yTarget = Math.sin(t * 0.5) * 0.3;
+    groupRef.current.position.y += (yTarget - groupRef.current.position.y) * 0.03;
 
-    // Scale: grow slightly then shrink as dissolving
-    let scale = 1;
-    if (scrollProgress < 0.6) {
-      scale = 1 + scrollProgress * 0.5;
-    } else {
-      scale = (1.3) * (1 - (scrollProgress - 0.6) / 0.4);
+    // Scale: stays visible throughout, only fades at very end
+    let targetScale = 1.0 + scrollProgress * 0.3; // grows slightly
+    if (scrollProgress > 0.9) {
+      targetScale *= 1.0 - (scrollProgress - 0.9) / 0.1; // fade out last 10%
     }
-    scale = Math.max(scale, 0);
-    groupRef.current.scale.setScalar(scale);
+    targetScale = Math.max(targetScale, 0.01);
+    const s = groupRef.current.scale.x;
+    groupRef.current.scale.setScalar(s + (targetScale - s) * 0.04);
 
-    // Wireframe opacity increases with scroll
+    // Wireframe: fades in as scroll progresses
     const wireMat = wireRef.current.material as THREE.MeshBasicMaterial;
-    wireMat.opacity = Math.min(scrollProgress * 2, 0.25);
+    wireMat.opacity = scrollProgress * 0.3;
 
-    // Main material: shift metalness/roughness
+    // Main material opacity: only fade at the very end
     const mainMat = meshRef.current.material as THREE.MeshStandardMaterial;
-    mainMat.roughness = 0.12 + scrollProgress * 0.3;
-    
-    // Dissolve via opacity
-    if (scrollProgress > 0.75) {
-      mainMat.transparent = true;
-      mainMat.opacity = 1 - (scrollProgress - 0.75) / 0.25;
-      wireMat.opacity = mainMat.opacity * 0.25;
+    if (scrollProgress > 0.9) {
+      mainMat.opacity = 1.0 - (scrollProgress - 0.9) / 0.1;
     } else {
-      mainMat.opacity = 1;
+      mainMat.opacity = 1.0;
     }
   });
 
   return (
-    <group ref={groupRef} position={[2, 0, 0]}>
+    <group ref={groupRef} position={[2.5, 0, 0]}>
+      {/* Main solid mesh */}
       <mesh ref={meshRef}>
         <icosahedronGeometry args={[2, 1]} />
         <meshStandardMaterial
-          color="#1a1a2e"
+          color="#18182b"
           metalness={0.95}
-          roughness={0.12}
-          envMapIntensity={1.2}
+          roughness={0.1}
+          envMapIntensity={1.5}
           transparent
+          opacity={1}
         />
       </mesh>
+      {/* Wireframe overlay */}
       <mesh ref={wireRef}>
-        <icosahedronGeometry args={[2.02, 1]} />
-        <meshBasicMaterial color="#ffffff" wireframe transparent opacity={0} />
+        <icosahedronGeometry args={[2.03, 1]} />
+        <meshBasicMaterial
+          color="#ffffff"
+          wireframe
+          transparent
+          opacity={0}
+        />
       </mesh>
     </group>
   );
@@ -90,10 +92,10 @@ export default function Scene3D({ scrollProgress, mousePos }: { scrollProgress: 
         gl={{ antialias: true, alpha: true }}
         style={{ background: "transparent" }}
       >
-        <ambientLight intensity={0.4} />
-        <directionalLight position={[5, 5, 5]} intensity={1.2} />
-        <directionalLight position={[-3, -2, -4]} intensity={0.3} color="#6366f1" />
-        <pointLight position={[0, 3, 4]} intensity={0.6} color="#a5b4fc" />
+        <ambientLight intensity={0.3} />
+        <directionalLight position={[5, 5, 5]} intensity={1.0} />
+        <directionalLight position={[-3, -2, -5]} intensity={0.3} color="#6366f1" />
+        <pointLight position={[0, 2, 5]} intensity={0.5} color="#a5b4fc" />
         <Polyhedron scrollProgress={scrollProgress} mousePos={mousePos} />
         <Environment preset="city" />
       </Canvas>

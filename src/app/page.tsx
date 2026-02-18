@@ -38,27 +38,37 @@ export default function Home() {
   const handleTheme = useCallback((t: "dark" | "light") => setTheme(t), []);
 
   const isDark = theme === "dark";
-  const bgColor = isDark ? "#000000" : "#e8e8e8";
-  const fgColor = isDark ? "#ffffff" : "#09090b";
+  const bgColor = isDark ? "#050505" : "#e4e4e7";
 
   return (
-    <div style={{
-      minHeight: "100vh",
-      background: bgColor,
-      color: fgColor,
-      transition: "background-color 0.8s ease, color 0.8s ease",
-    }}>
+    <>
+      {/* Background that covers entire page and transitions */}
+      <div style={{
+        position: "fixed",
+        inset: 0,
+        background: bgColor,
+        transition: "background 0.8s ease",
+        zIndex: 0,
+      }} />
+
       <Navbar theme={theme} />
 
       {!isMobile && <Scene3D scrollProgress={scrollProgress} mousePos={mousePos} />}
 
-      <HeroScroll onProgress={handleProgress} onTheme={handleTheme} />
+      {/* All content above the fixed bg */}
+      <div style={{ position: "relative", zIndex: 2 }}>
+        <HeroScroll onProgress={handleProgress} onTheme={handleTheme} />
 
-      <div style={{ background: "#000", color: "#fff", position: "relative", zIndex: 10 }}>
-        <Projects />
-        <Experience />
-        <Contact />
+        {/* Hard cut to dark for content sections */}
+        <div style={{
+          background: "#050505",
+          color: "#ffffff",
+        }}>
+          <Projects />
+          <Experience />
+          <Contact />
+        </div>
       </div>
-    </div>
+    </>
   );
 }
