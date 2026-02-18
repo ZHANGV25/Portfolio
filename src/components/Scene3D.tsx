@@ -18,16 +18,14 @@ function Polyhedron({ scrollProgress, mousePos }: { scrollProgress: number; mous
     groupRef.current.rotation.x += (mousePos.y * 0.15 + Math.sin(t * 0.2) * 0.1 - groupRef.current.rotation.x) * 0.02;
     groupRef.current.rotation.y += (mousePos.x * 0.15 + t * 0.1 - groupRef.current.rotation.y) * 0.02;
 
-    // Scroll-driven horizontal position: starts right, moves left
-    const xTarget = 2.5 - scrollProgress * 5;
+    // Scroll-driven position: starts top-right, moves down-left across the page
+    const xTarget = 3.0 - scrollProgress * 6.0;
+    const yTarget = 1.0 - scrollProgress * 2.0 + Math.sin(t * 0.5) * 0.2;
     groupRef.current.position.x += (xTarget - groupRef.current.position.x) * 0.03;
-
-    // Gentle vertical float
-    const yTarget = Math.sin(t * 0.5) * 0.3;
     groupRef.current.position.y += (yTarget - groupRef.current.position.y) * 0.03;
 
-    // Scale: stays visible throughout, only fades at very end
-    let targetScale = 1.0 + scrollProgress * 0.3;
+    // Scale: moderate size, grows slightly
+    let targetScale = 0.8 + scrollProgress * 0.15;
     if (scrollProgress > 0.9) {
       targetScale *= 1.0 - (scrollProgress - 0.9) / 0.1;
     }
@@ -35,23 +33,19 @@ function Polyhedron({ scrollProgress, mousePos }: { scrollProgress: number; mous
     const s = groupRef.current.scale.x;
     groupRef.current.scale.setScalar(s + (targetScale - s) * 0.04);
 
-    // Wireframe: fades in as scroll progresses
+    // Wireframe fades in
     const wireMat = wireRef.current.material as THREE.MeshBasicMaterial;
-    wireMat.opacity = scrollProgress * 0.3;
+    wireMat.opacity = scrollProgress * 0.25;
 
-    // Main material opacity: only fade at the very end
+    // Dissolve at end
     const mainMat = meshRef.current.material as THREE.MeshStandardMaterial;
-    if (scrollProgress > 0.9) {
-      mainMat.opacity = 1.0 - (scrollProgress - 0.9) / 0.1;
-    } else {
-      mainMat.opacity = 1.0;
-    }
+    mainMat.opacity = scrollProgress > 0.9 ? 1.0 - (scrollProgress - 0.9) / 0.1 : 1.0;
   });
 
   return (
-    <group ref={groupRef} position={[2.5, 0, 0]}>
+    <group ref={groupRef} position={[3, 1, 0]}>
       <mesh ref={meshRef}>
-        <icosahedronGeometry args={[2, 1]} />
+        <icosahedronGeometry args={[1.6, 1]} />
         <meshStandardMaterial
           color="#18182b"
           metalness={0.95}
@@ -62,13 +56,8 @@ function Polyhedron({ scrollProgress, mousePos }: { scrollProgress: number; mous
         />
       </mesh>
       <mesh ref={wireRef}>
-        <icosahedronGeometry args={[2.03, 1]} />
-        <meshBasicMaterial
-          color="#ffffff"
-          wireframe
-          transparent
-          opacity={0}
-        />
+        <icosahedronGeometry args={[1.62, 1]} />
+        <meshBasicMaterial color="#ffffff" wireframe transparent opacity={0} />
       </mesh>
     </group>
   );
@@ -100,7 +89,7 @@ export default function Scene3D({ scrollProgress, mousePos }: { scrollProgress: 
       pointerEvents: "none",
     }}>
       <Canvas
-        camera={{ position: [0, 0, 7], fov: 45 }}
+        camera={{ position: [0, 0, 8], fov: 40 }}
         gl={{ antialias: true, alpha: true }}
         style={{ background: "transparent" }}
       >

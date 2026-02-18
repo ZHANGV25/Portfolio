@@ -59,10 +59,10 @@ export default function Home() {
       <div style={{ position: "relative", zIndex: 2 }}>
         <HeroScroll onProgress={handleProgress} onTheme={handleTheme} />
 
-        {/* Hard cut to dark for content sections */}
+        {/* Content sections - light theme */}
         <div style={{
-          background: "#050505",
-          color: "#ffffff",
+          background: "#f0f0f0",
+          color: "#09090b",
         }}>
           <Projects />
           <Experience />

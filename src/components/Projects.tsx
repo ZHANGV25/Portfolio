@@ -46,33 +46,12 @@ const projects = [
   },
 ];
 
-const cardStyle: React.CSSProperties = {
-  padding: 32,
-  borderRadius: 24,
-  border: "1px solid rgba(255,255,255,0.06)",
-  background: "rgba(255,255,255,0.02)",
-  transition: "all 0.3s ease",
-  cursor: "default",
-};
-
-const tagStyle: React.CSSProperties = {
-  display: "inline-block",
-  padding: "4px 12px",
-  borderRadius: 8,
-  background: "rgba(255,255,255,0.05)",
-  border: "1px solid rgba(255,255,255,0.06)",
-  fontSize: 10,
-  letterSpacing: "0.1em",
-  textTransform: "uppercase",
-  color: "#a1a1aa",
-};
-
 export default function Projects() {
   return (
-    <section id="projects" style={{ position: "relative", zIndex: 10, padding: "128px 32px", maxWidth: 1200, margin: "0 auto" }}>
+    <section id="projects" style={{ padding: "128px 32px", maxWidth: 1200, margin: "0 auto" }}>
       <div style={{ marginBottom: 80 }}>
         <div style={{ fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", color: "#71717a", marginBottom: 16 }}>Projects</div>
-        <h2 style={{ fontSize: "clamp(2.5rem, 5vw, 3.5rem)", fontWeight: 700, letterSpacing: "-0.02em" }}>
+        <h2 style={{ fontSize: "clamp(2.5rem, 5vw, 3.5rem)", fontWeight: 700, letterSpacing: "-0.02em", color: "#09090b" }}>
           What I&apos;ve <span style={{ opacity: 0.2 }}>_</span> Built
         </h2>
       </div>
@@ -85,16 +64,25 @@ export default function Projects() {
         {projects.map((p) => (
           <div
             key={p.title}
-            style={cardStyle}
+            style={{
+              padding: 32,
+              borderRadius: 24,
+              border: "1px solid rgba(0,0,0,0.08)",
+              background: "rgba(255,255,255,0.7)",
+              transition: "all 0.3s ease",
+              cursor: "default",
+            }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)";
-              e.currentTarget.style.background = "rgba(255,255,255,0.04)";
+              e.currentTarget.style.borderColor = "rgba(0,0,0,0.15)";
+              e.currentTarget.style.background = "rgba(255,255,255,0.9)";
               e.currentTarget.style.transform = "translateY(-2px)";
+              e.currentTarget.style.boxShadow = "0 8px 30px rgba(0,0,0,0.08)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)";
-              e.currentTarget.style.background = "rgba(255,255,255,0.02)";
+              e.currentTarget.style.borderColor = "rgba(0,0,0,0.08)";
+              e.currentTarget.style.background = "rgba(255,255,255,0.7)";
               e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "none";
             }}
           >
             {/* Image placeholder */}
@@ -102,30 +90,40 @@ export default function Projects() {
               width: "100%",
               height: 176,
               borderRadius: 16,
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(255,255,255,0.05)",
+              background: "rgba(0,0,0,0.04)",
+              border: "1px solid rgba(0,0,0,0.06)",
               marginBottom: 24,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
             }}>
-              <span style={{ color: "#3f3f46", fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase" }}>Screenshot</span>
+              <span style={{ color: "#a1a1aa", fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase" }}>Screenshot</span>
             </div>
 
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
-              <h3 style={{ fontSize: 20, fontWeight: 600, letterSpacing: "-0.01em" }}>{p.title}</h3>
-              <span style={{ color: "#52525b", fontSize: 12, fontFamily: "monospace", flexShrink: 0, marginLeft: 12 }}>{p.date}</span>
+              <h3 style={{ fontSize: 20, fontWeight: 600, letterSpacing: "-0.01em", color: "#09090b" }}>{p.title}</h3>
+              <span style={{ color: "#a1a1aa", fontSize: 12, fontFamily: "monospace", flexShrink: 0, marginLeft: 12 }}>{p.date}</span>
             </div>
 
-            <p style={{ color: "#a1a1aa", fontSize: 14, lineHeight: 1.6, fontWeight: 300, marginBottom: 16 }}>{p.desc}</p>
+            <p style={{ color: "#52525b", fontSize: 14, lineHeight: 1.6, fontWeight: 300, marginBottom: 16 }}>{p.desc}</p>
 
             {p.award && (
-              <div style={{ fontSize: 12, color: "rgba(234,179,8,0.7)", fontWeight: 500, marginBottom: 16 }}>{p.award}</div>
+              <div style={{ fontSize: 12, color: "#b45309", fontWeight: 500, marginBottom: 16 }}>{p.award}</div>
             )}
 
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
               {p.tags.map((tag) => (
-                <span key={tag} style={tagStyle}>{tag}</span>
+                <span key={tag} style={{
+                  display: "inline-block",
+                  padding: "4px 12px",
+                  borderRadius: 8,
+                  background: "rgba(0,0,0,0.04)",
+                  border: "1px solid rgba(0,0,0,0.06)",
+                  fontSize: 10,
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase" as const,
+                  color: "#71717a",
+                }}>{tag}</span>
               ))}
             </div>
 
@@ -136,13 +134,13 @@ export default function Projects() {
                 rel="noopener noreferrer"
                 style={{
                   fontSize: 12,
-                  color: "#a1a1aa",
+                  color: "#52525b",
                   textDecoration: "underline",
                   textUnderlineOffset: 4,
                   transition: "color 0.3s",
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#09090b")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#52525b")}
               >
                 {p.linkLabel} →
               </a>

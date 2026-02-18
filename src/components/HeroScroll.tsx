@@ -71,17 +71,19 @@ export default function HeroScroll({ onProgress, onTheme }: HeroScrollProps) {
       // Fade sidebar near end
       setSidebarOpacity(progress < 0.85 ? 1 : Math.max(0, (1 - progress) / 0.15));
 
-      // Fade content between sections
-      const sectionProg = (progress * sections.length) % 1;
-      if (sectionProg < 0.1) setContentOpacity(sectionProg / 0.1);
-      else if (sectionProg > 0.85) setContentOpacity((1 - sectionProg) / 0.15);
-      else setContentOpacity(1);
+      // Fade content between sections — but always visible at start
+      if (progress === 0) {
+        setContentOpacity(1);
+      } else {
+        const sectionProg = (progress * sections.length) % 1;
+        if (sectionProg < 0.05) setContentOpacity(Math.max(0.3, sectionProg / 0.05));
+        else if (sectionProg > 0.9) setContentOpacity(Math.max(0.3, (1 - sectionProg) / 0.1));
+        else setContentOpacity(1);
+      }
 
-      // Theme: match to section index not progress for consistency
-      // Sections 0,1 = dark, section 2 = light, sections 3,4 = dark
-      if (idx <= 1) onTheme("dark");
-      else if (idx === 2) onTheme("light");
-      else onTheme("dark");
+      // Theme: dark entire hero, switch to light only at section 05 (connect)
+      if (idx <= 3) onTheme("dark");
+      else onTheme("light");
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -90,8 +92,8 @@ export default function HeroScroll({ onProgress, onTheme }: HeroScrollProps) {
   }, [onProgress, onTheme]);
 
   const active = sections[activeIndex];
-  // Text color must match background theme exactly
-  const isDark = activeIndex !== 2;
+  // Text color: dark for sections 0-3, light for section 4
+  const isDark = activeIndex <= 3;
   const textColor = isDark ? "#ffffff" : "#09090b";
   const mutedColor = isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)";
   const borderColor = isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)";
